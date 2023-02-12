@@ -55,19 +55,19 @@ public class Player {
         
         // depending on which arrow key was pressed, we're going to move the player by
         // one whole tile for this input
-        if (key == KeyEvent.VK_UP) {
+        if (key == KeyEvent.VK_UP || key == KeyEvent.VK_W) {
             pos.translate(0, -1);
         }
-        if (key == KeyEvent.VK_RIGHT) {
+        if (key == KeyEvent.VK_RIGHT || key == KeyEvent.VK_D) {
             pos.translate(1, 0);
         }
-        if (key == KeyEvent.VK_DOWN) {
+        if (key == KeyEvent.VK_DOWN || key == KeyEvent.VK_S) {
             pos.translate(0, 1);
         }
-        if (key == KeyEvent.VK_LEFT) {
+        if (key == KeyEvent.VK_LEFT || key == KeyEvent.VK_A) {
             pos.translate(-1, 0);
         }
-
+        
         
     }
 

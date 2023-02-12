@@ -48,7 +48,7 @@ public class Board extends JPanel implements ActionListener, KeyListener {
         // before the graphics are redrawn.
 
         // give the player points for collecting apples
-        removeGear();
+        
         
         // prevent the player from disappearing off the board
         player.tick();
@@ -99,8 +99,15 @@ public class Board extends JPanel implements ActionListener, KeyListener {
         // one whole tile for this input
         
 
-        if (key == KeyEvent.VK_N) {
+        if (key == KeyEvent.VK_E) {
+          
           addGear();  
+          System.out.println(gearList);
+          
+        }
+        if (key == KeyEvent.VK_Q) {
+            removeGear();
+            System.out.println(gearList);
         }
     }
 
@@ -130,7 +137,7 @@ public class Board extends JPanel implements ActionListener, KeyListener {
 
     private void drawScore(Graphics g) {
         // set the text to be displayed
-        String text = "Size: " + player.getScore();
+        String text = "pos: " + player.getPos();
         // we need to cast the Graphics to Graphics2D to draw nicer text
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(
@@ -161,16 +168,15 @@ public class Board extends JPanel implements ActionListener, KeyListener {
     }
     
     private void removeGear(){
-        ArrayList<Gear> removedGears = new ArrayList<>();
+
         for (Gear gear : gearList) {
-            //if player is on same tile as an apple, destroy the gear
+            //if player is on same tile as an gear, destroy the gear
             if (player.getPos().equals(gear.getPos())){
                 //add gear to kill list
-                removedGears.add(gear);
+                gearList.remove(gear);
             }
         }
-        //remove listed gears from the board
-        gearList.removeAll(removedGears);
+        
         
     }
 

@@ -181,6 +181,14 @@ public class Board extends JPanel implements ActionListener, KeyListener {
     }
 
     private void addGear(){
+        for (Gear gear : gearList) {
+            //if player is on same tile as an gear, destroy the gear
+            if (player.getPos().equals(gear.getPos())){
+                //add gear to kill list
+                System.out.println("gear already here");
+                return;
+            }
+        }
         gearList.add(new Gear(player.getPos()));
     }
   

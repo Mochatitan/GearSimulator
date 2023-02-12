@@ -1,11 +1,10 @@
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
-import java.util.Random;
+// import java.util.Random;
 import javax.swing.*;
 
 public class Board extends JPanel implements ActionListener, KeyListener {
-
 
     // controls the delay between each tick in ms
     private final int DELAY = 25;
@@ -14,17 +13,18 @@ public class Board extends JPanel implements ActionListener, KeyListener {
     public static final int ROWS = 20;
     public static final int COLUMNS = 20;
     // controls how many apples appear on the board
-    //public static final int NUM_GEARS = 5;
+    // public static final int NUM_GEARS = 5;
     // suppress serialization warning
     private static final long serialVersionUID = 490905409104883233L;
-    
+
     // keep a reference to the timer object that triggers actionPerformed() in
     // case we need access to it in another method
     private Timer timer;
     // objects that appear on the game board
-    
+
     private ArrayList<Gear> gearList;
     private Player player;
+
     public Board() {
         // set the game board size
         setPreferredSize(new Dimension(TILE_SIZE * COLUMNS, TILE_SIZE * ROWS));
@@ -33,8 +33,8 @@ public class Board extends JPanel implements ActionListener, KeyListener {
 
         // initialize the game state
         gearList = new ArrayList<Gear>();
-        gearList.add(new Gear(new Point(4,5)));
-        
+        gearList.add(new Gear(new Point(4, 5)));
+
         player = new Player();
         // this timer will call the actionPerformed() method every DELAY ms
         timer = new Timer(DELAY, this);
@@ -48,12 +48,9 @@ public class Board extends JPanel implements ActionListener, KeyListener {
         // before the graphics are redrawn.
 
         // give the player points for collecting apples
-        
-        
+
         // prevent the player from disappearing off the board
         player.tick();
-
-        
 
         // calling repaint() will trigger paintComponent() to run again,
         // which will refresh/redraw the graphics.
@@ -63,9 +60,9 @@ public class Board extends JPanel implements ActionListener, KeyListener {
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        // when calling g.drawImage() we can use "this" for the ImageObserver 
-        // because Component implements the ImageObserver interface, and JPanel 
-        // extends from Component. So "this" Board instance, as a Component, can 
+        // when calling g.drawImage() we can use "this" for the ImageObserver
+        // because Component implements the ImageObserver interface, and JPanel
+        // extends from Component. So "this" Board instance, as a Component, can
         // react to imageUpdate() events triggered by g.drawImage()
 
         // draw our graphics.
@@ -91,19 +88,21 @@ public class Board extends JPanel implements ActionListener, KeyListener {
     public void keyPressed(KeyEvent e) {
         // react to key down events
         player.keyPressed(e);
-         // every keyboard get has a certain code. get the value of that code from the
+        // every keyboard get has a certain code. get the value of that code from the
         // keyboard event so that we can compare it to KeyEvent constants
         int key = e.getKeyCode();
-        
+
         // depending on which arrow key was pressed, we're going to move the player by
         // one whole tile for this input
-        
 
         if (key == KeyEvent.VK_E) {
-          
-          addGear();  
-          System.out.println(gearList);
-          
+
+            addGear();
+            for (Gear gear : gearList) {
+                System.out.println(gear.getPos());
+            }
+            // System.out.println(gearList);
+
         }
         if (key == KeyEvent.VK_Q) {
             removeGear();
@@ -125,13 +124,12 @@ public class Board extends JPanel implements ActionListener, KeyListener {
                 if ((row + col) % 2 == 1) {
                     // draw a square tile at the current row/column position
                     g.fillRect(
-                        col * TILE_SIZE, 
-                        row * TILE_SIZE, 
-                        TILE_SIZE, 
-                        TILE_SIZE
-                    );
+                            col * TILE_SIZE,
+                            row * TILE_SIZE,
+                            TILE_SIZE,
+                            TILE_SIZE);
                 }
-            }    
+            }
         }
     }
 
@@ -141,14 +139,14 @@ public class Board extends JPanel implements ActionListener, KeyListener {
         // we need to cast the Graphics to Graphics2D to draw nicer text
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(
-            RenderingHints.KEY_TEXT_ANTIALIASING,
-            RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+                RenderingHints.KEY_TEXT_ANTIALIASING,
+                RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         g2d.setRenderingHint(
-            RenderingHints.KEY_RENDERING,
-            RenderingHints.VALUE_RENDER_QUALITY);
+                RenderingHints.KEY_RENDERING,
+                RenderingHints.VALUE_RENDER_QUALITY);
         g2d.setRenderingHint(
-            RenderingHints.KEY_FRACTIONALMETRICS,
-            RenderingHints.VALUE_FRACTIONALMETRICS_ON);
+                RenderingHints.KEY_FRACTIONALMETRICS,
+                RenderingHints.VALUE_FRACTIONALMETRICS_ON);
         // set the text color and font
         g2d.setColor(new Color(30, 201, 139));
         g2d.setFont(new Font("Lato", Font.BOLD, 25));
@@ -166,31 +164,33 @@ public class Board extends JPanel implements ActionListener, KeyListener {
         // draw the string
         g2d.drawString(text, x, y);
     }
-    
-    private void removeGear(){
+
+    private void removeGear() {
 
         for (Gear gear : gearList) {
-            //if player is on same tile as an gear, destroy the gear
-            if (player.getPos().equals(gear.getPos())){
-                //add gear to kill list
+            // if player is on same tile as an gear, destroy the gear
+            if (player.getPos().equals(gear.getPos())) {
+                // add gear to kill list
                 gearList.remove(gear);
             }
         }
-        
-        
+
     }
 
-    private void addGear(){
+    private void addGear() {
+        System.out.println(gearList);
         for (Gear gear : gearList) {
-            //if player is on same tile as an gear, destroy the gear
-            if (player.getPos().equals(gear.getPos())){
-                //add gear to kill list
+            System.out.println(player.getPos() + " " + gear.getPos());
+            // if player is on same tile as an gear, destroy the gear
+            if (player.getPos().equals(gear.getPos()) == true) {
+                // add gear to kill list
+
                 System.out.println("gear already here");
                 return;
+
             }
         }
-        gearList.add(new Gear(player.getPos()));
+        gearList.add(new Gear(new Point(player.getPos())));
     }
-  
-}
 
+}

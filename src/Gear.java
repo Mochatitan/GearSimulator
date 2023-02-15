@@ -15,7 +15,7 @@ public class Gear {
     // current position of the gear on the board grid
     private Point pos;
     private int rot;
-    private int rotSpeed;
+    private int rotSpeed = 5;
 
     public Gear(Point gpos) {
         // load the assets

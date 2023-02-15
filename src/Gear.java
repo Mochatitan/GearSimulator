@@ -11,9 +11,11 @@ public class Gear {
 
     // image that represents the gear's position on the board
     private BufferedImage image;
-    private Image newImage;
+    private Image newSizeImage;
     // current position of the gear on the board grid
     private Point pos;
+    private int rot;
+    private int rotSpeed;
 
     public Gear(Point gpos) {
         // load the assets
@@ -28,7 +30,7 @@ public class Gear {
             // you can use just the filename if the image file is in your
             // project folder, otherwise you need to provide the file path.
             image = ImageIO.read(new File("src/images/gear.png"));
-            newImage = image.getScaledInstance(Board.TILE_SIZE, Board.TILE_SIZE, Image.SCALE_DEFAULT);
+            newSizeImage = image.getScaledInstance(Board.TILE_SIZE, Board.TILE_SIZE, Image.SCALE_DEFAULT);
         } catch (IOException exc) {
             System.out.println("Error opening image file: " + exc.getMessage());
         }
@@ -40,7 +42,7 @@ public class Gear {
         // this is also where we translate board grid position into a canvas pixel
         // position by multiplying by the tile size.
         g.drawImage(
-                newImage,
+                newSizeImage,
                 pos.x * Board.TILE_SIZE,
                 pos.y * Board.TILE_SIZE,
                 observer);
@@ -52,7 +54,45 @@ public class Gear {
 
     public void tick() {
         // called before repaint
-
+        
     }
+    
+    public int getRot(){
+        return rot;
+    }
+    public int getRotSpeed(){
+        return rotSpeed;
+    }
+    public void setRot(int newRot){
+        rot=newRot;
+    }
+    public void setRotSpeed(int newRotSpeed){
+        rotSpeed=newRotSpeed;
+    }
+    public static BufferedImage rotate(BufferedImage img)
+    {
+ 
+        // Getting Dimensions of image
+        int width = img.getWidth();
+        int height = img.getHeight();
+ 
+        // Creating a new buffered image
+        BufferedImage newImage = new BufferedImage(
+            img.getWidth(), img.getHeight(), img.getType());
+ 
+        // creating Graphics in buffered image
+        Graphics2D g2 = newImage.createGraphics();
+ 
+        // Rotating image by degrees using toradians()
+        // method
+        // and setting new dimension t it
+        g2.rotate(Math.toRadians(90), width / 2,
+                  height / 2);
+        g2.drawImage(img, null, 0, 0);
+ 
+        // Return rotated buffer image
+        return newImage;
+    }
+
 
 }

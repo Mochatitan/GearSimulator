@@ -69,30 +69,7 @@ public class Gear {
     public void setRotSpeed(int newRotSpeed){
         rotSpeed=newRotSpeed;
     }
-    public static BufferedImage rotate(BufferedImage img)
-    {
- 
-        // Getting Dimensions of image
-        int width = img.getWidth();
-        int height = img.getHeight();
- 
-        // Creating a new buffered image
-        BufferedImage newImage = new BufferedImage(
-            img.getWidth(), img.getHeight(), img.getType());
- 
-        // creating Graphics in buffered image
-        Graphics2D g2 = newImage.createGraphics();
- 
-        // Rotating image by degrees using toradians()
-        // method
-        // and setting new dimension t it
-        g2.rotate(Math.toRadians(90), width / 2,
-                  height / 2);
-        g2.drawImage(img, null, 0, 0);
- 
-        // Return rotated buffer image
-        return newImage;
-    }
-
+    
+   
 
 }

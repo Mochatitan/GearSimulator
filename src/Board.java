@@ -51,7 +51,9 @@ public class Board extends JPanel implements ActionListener, KeyListener {
 
         // prevent the player from disappearing off the board
         player.tick();
-
+        for (Gear gear : gearList) {
+            gear.tick();
+        }
         // calling repaint() will trigger paintComponent() to run again,
         // which will refresh/redraw the graphics.
         repaint();
@@ -64,13 +66,13 @@ public class Board extends JPanel implements ActionListener, KeyListener {
         // because Component implements the ImageObserver interface, and JPanel
         // extends from Component. So "this" Board instance, as a Component, can
         // react to imageUpdate() events triggered by g.drawImage()
-
+        Graphics2D g2d = (Graphics2D) g;
         // draw our graphics.
         drawBackground(g);
         drawScore(g);
 
         for (Gear gear : gearList) {
-            gear.draw(g, this);
+            gear.draw(g2d, this);
         }
 
         player.draw(g, this);

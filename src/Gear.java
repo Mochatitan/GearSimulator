@@ -1,4 +1,5 @@
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.ImageObserver;
 import java.awt.Point;
@@ -11,10 +12,10 @@ public class Gear {
 
     // image that represents the gear's position on the board
     private BufferedImage image;
-    private Image newSizeImage;
+    private BufferedImage newSizeImage;
     // current position of the gear on the board grid
     private Point pos;
-    private int rot;
+    private int rot = 45;
     private int rotSpeed = 5;
 
     public Gear(Point gpos) {
@@ -30,7 +31,7 @@ public class Gear {
             // you can use just the filename if the image file is in your
             // project folder, otherwise you need to provide the file path.
             image = ImageIO.read(new File("src/images/gear.png"));
-            newSizeImage = image.getScaledInstance(Board.TILE_SIZE, Board.TILE_SIZE, Image.SCALE_DEFAULT);
+            finalImage = rotate(image.getScaledInstance(Board.TILE_SIZE, Board.TILE_SIZE, Image.SCALE_DEFAULT));
         } catch (IOException exc) {
             System.out.println("Error opening image file: " + exc.getMessage());
         }
@@ -42,7 +43,7 @@ public class Gear {
         // this is also where we translate board grid position into a canvas pixel
         // position by multiplying by the tile size.
         g.drawImage(
-                newSizeImage,
+                finalImage,
                 pos.x * Board.TILE_SIZE,
                 pos.y * Board.TILE_SIZE,
                 observer);
@@ -70,6 +71,15 @@ public class Gear {
         rotSpeed=newRotSpeed;
     }
     
+    public static BufferedImage rotate(BufferedImage img) {  
+      int w = img.getWidth();  
+      int h = img.getHeight();  
+      BufferedImage newImage = new BufferedImage(width, height, img.getType());
+      Graphics2D g2 = newImage.createGraphics();
+      g2.rotate(Math.toRadians(rot), w/2, h/2);  
+      g2.drawImage(img,null,0,0);
+      return newImage;  
+  }
    
 
 }

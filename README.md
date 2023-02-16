@@ -1,18 +1,8 @@
-## Getting Started
+## Gear simulator
 
-Welcome to the VS Code Java world. Here is a guideline to help you get started to write Java code in Visual Studio Code.
+version 0.1
+this is a fun little gear sim i made in my spare time.
 
-## Folder Structure
+## how to play
 
-The workspace contains two folders by default, where:
-
-- `src`: the folder to maintain sources
-- `lib`: the folder to maintain dependencies
-
-Meanwhile, the compiled output files will be generated in the `bin` folder by default.
-
-> If you want to customize the folder structure, open `.vscode/settings.json` and update the related settings there.
-
-## Dependency Management
-
-The `JAVA PROJECTS` view allows you to manage your dependencies. More details can be found [here](https://github.com/microsoft/vscode-java-dependency#manage-dependencies).
+you play by pressing e to make a new gear, q to remove the gear your on, r to start spinning the gear your at, and wasd/arrows to move the player.

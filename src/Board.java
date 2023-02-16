@@ -12,6 +12,11 @@ public class Board extends JPanel implements ActionListener, KeyListener {
     public static final int TILE_SIZE = 50;
     public static final int ROWS = 20;
     public static final int COLUMNS = 20;
+    // Gear constants
+    public static final double DEFAULT_SPEED = 4;
+    public static final Boolean CLOCKWISE = true;
+    public static final Boolean COUNTERCLOCKWISE = false;
+
     // controls how many apples appear on the board
     // public static final int NUM_GEARS = 5;
     // suppress serialization warning
@@ -23,6 +28,7 @@ public class Board extends JPanel implements ActionListener, KeyListener {
     // objects that appear on the game board
 
     private ArrayList<Gear> gearList;
+    private ArrayList<Gear> dontRotList;
     private Player player;
 
     public Board() {
@@ -33,7 +39,13 @@ public class Board extends JPanel implements ActionListener, KeyListener {
 
         // initialize the game state
         gearList = new ArrayList<Gear>();
-        gearList.add(new Gear(new Point(4, 5)));
+        Gear mainGearSpinning = new Gear(new Point(4, 5));
+        mainGearSpinning.setSpeed(DEFAULT_SPEED);
+        mainGearSpinning.setDirection(CLOCKWISE);
+        gearList.add(mainGearSpinning);
+
+        dontRotList = new ArrayList<Gear>();
+        // dontRotList.add(new Gear(new Point(4, 5)));
 
         player = new Player();
         // this timer will call the actionPerformed() method every DELAY ms
@@ -51,7 +63,10 @@ public class Board extends JPanel implements ActionListener, KeyListener {
 
         // prevent the player from disappearing off the board
         player.tick();
-
+        // update rotation
+        for (Gear gear : gearList) {
+            gear.tick();
+        }
         // calling repaint() will trigger paintComponent() to run again,
         // which will refresh/redraw the graphics.
         repaint();
@@ -64,13 +79,13 @@ public class Board extends JPanel implements ActionListener, KeyListener {
         // because Component implements the ImageObserver interface, and JPanel
         // extends from Component. So "this" Board instance, as a Component, can
         // react to imageUpdate() events triggered by g.drawImage()
-
+        Graphics2D g2d = (Graphics2D) g;
         // draw our graphics.
         drawBackground(g);
         drawScore(g);
 
         for (Gear gear : gearList) {
-            gear.draw(g, this);
+            gear.draw(g2d, this);
         }
 
         player.draw(g, this);
@@ -96,17 +111,15 @@ public class Board extends JPanel implements ActionListener, KeyListener {
         // one whole tile for this input
 
         if (key == KeyEvent.VK_E) {
-
             addGear();
-            for (Gear gear : gearList) {
-                System.out.println(gear.getPos());
-            }
-            // System.out.println(gearList);
-
         }
         if (key == KeyEvent.VK_Q) {
             removeGear();
-            System.out.println(gearList);
+        }
+        if (key == KeyEvent.VK_R) {
+            System.out.println("updating speeds");
+            updateGearRotationSpeed(player.getPos());
+            System.out.println("done");
         }
     }
 
@@ -166,21 +179,23 @@ public class Board extends JPanel implements ActionListener, KeyListener {
     }
 
     private void removeGear() {
-
+        if (getGear(player.getPos()) != null) {
+            dontRotList.remove(getGear(player.getPos()));
+            gearList.remove(getGear(player.getPos()));
+        }
         for (Gear gear : gearList) {
             // if player is on same tile as an gear, destroy the gear
             if (player.getPos().equals(gear.getPos())) {
                 // add gear to kill list
-                gearList.remove(gear);
+
             }
         }
 
     }
 
     private void addGear() {
-        System.out.println(gearList);
+
         for (Gear gear : gearList) {
-            System.out.println(player.getPos() + " " + gear.getPos());
             // if player is on same tile as an gear, destroy the gear
             if (player.getPos().equals(gear.getPos()) == true) {
                 // add gear to kill list
@@ -193,4 +208,58 @@ public class Board extends JPanel implements ActionListener, KeyListener {
         gearList.add(new Gear(new Point(player.getPos())));
     }
 
+    private void updateGearRotationSpeed(Point mainGearPos) {
+        // TODO fix stackOverflow error
+        for (Gear gear : gearList) {
+            Gear mainGear = getGear(mainGearPos);
+            if (gear.getPos().equals(mainGearPos) == true) {
+                dontRotList.add(gear);
+            }
+
+            if ((gear.getPos().distance(mainGearPos) == 1) && gearRemoved(gear.getPos()) == false) {
+
+                gear.setSpeed(gearSpeedFormula(mainGear, gear));
+                if (mainGear.getDirection() == CLOCKWISE) {
+                    gear.setDirection(COUNTERCLOCKWISE);
+                } else if (mainGear.getDirection() == COUNTERCLOCKWISE) {
+                    gear.setDirection(CLOCKWISE);
+                }
+                updateGearRotationSpeed(gear.getPos());
+            }
+
+        }
+        dontRotList.clear();
+    }
+
+    /**
+     * Formula for calculating the gear speed
+     * 
+     * @param gearOne the first gear thats already spinning
+     * @param gearTwo the second gear which speed you want to calculate
+     * @return the speed the second gear should spin
+     */
+    private double gearSpeedFormula(Gear gearOne, Gear gearTwo) {
+        return DEFAULT_SPEED;
+    }
+
+    private Gear getGear(Point posit) {
+
+        for (Gear gear : gearList) {
+            if (gear.getPos().equals(posit)) {
+                return gear;
+            }
+        }
+
+        return null;
+    }
+
+    private Boolean gearRemoved(Point posit) {
+        for (Gear gear : dontRotList) {
+            if (gear.getPos().equals(posit)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

@@ -18,8 +18,8 @@ public class Gear {
     private BufferedImage finalImage;
     // current position of the gear on the board grid
     private Point pos;
-    private double drawingAngle = 10;
-    private double speed = 5;
+    private double drawingAngle = 0;
+    private double speed = 0;
     private Boolean clockWise = true;
 
     public Gear(Point gpos) {
@@ -71,7 +71,15 @@ public class Gear {
 
     public void tick() {
         // called before repaint
-        this.drawingAngle += speed;
+        if (clockWise) {
+            this.drawingAngle += speed;
+        } else {
+            this.drawingAngle -= speed;
+        }
+
+        if (this.drawingAngle == 360) { // may cause bugs, if theres a bug comment this out
+            this.drawingAngle = 0;
+        }
     }
 
     // getters and setters
@@ -102,6 +110,22 @@ public class Gear {
 
     public void setDrawingAngle(double newAngle) {
         drawingAngle = newAngle;
+    }
+
+    public void setSpeed(double newSpeed) {
+        speed = newSpeed;
+    }
+
+    public double getSpeed() {
+        return speed;
+    }
+
+    public Boolean getDirection() {
+        return clockWise;
+    }
+
+    public void setDirection(Boolean status) {
+        clockWise = status;
     }
 
     public static BufferedImage imageToBufferedImage(Image im) {

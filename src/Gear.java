@@ -22,13 +22,18 @@ public class Gear {
     private double speed = 0;
     private Boolean clockWise = true;
 
-    public Gear(Point gpos) {
+    public Gear(Point gpos) {     //Point constructor
         // load the assets
         loadImage();
-
         // initialize the state
         pos = gpos;
     }
+    public Gear(int x, int y) {   //X and Y constructor
+        //load the assets
+        loadImage();
+        // initialize the state
+        pos = new Point(x,y);
+    }     
 
     private void loadImage() {
         try {
@@ -47,15 +52,7 @@ public class Gear {
         // pos.x reliably returns an int. https://stackoverflow.com/a/30220114/4655368
         // this is also where we translate board grid position into a canvas pixel
         // position by multiplying by the tile size.
-        // AffineTransform tx = AffineTransform.getRotateInstance(rotationRequired,
-        // locationX, locationY);
-        // AffineTransformOp op = new AffineTransformOp(tx,
-        // AffineTransformOp.TYPE_BILINEAR);
-        // g2d.drawImage(
-        // newImage,
-        // pos.x * Board.TILE_SIZE,
-        // pos.y * Board.TILE_SIZE,
-        // observer);
+        
         AffineTransform tr = new AffineTransform();
         // X and Y are the coordinates of the image
         tr.translate(getXLocation(), getYLocation());

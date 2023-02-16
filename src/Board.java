@@ -16,7 +16,10 @@ public class Board extends JPanel implements ActionListener, KeyListener {
     public static final double DEFAULT_SPEED = 4;
     public static final Boolean CLOCKWISE = true;
     public static final Boolean COUNTERCLOCKWISE = false;
-
+    // Gear sizes
+    public static final int SMALL = 1;
+    public static final int MEDIUM = 3;
+    public static final int LARGE = 129;
     // controls how many apples appear on the board
     // public static final int NUM_GEARS = 5;
     // suppress serialization warning
@@ -29,7 +32,11 @@ public class Board extends JPanel implements ActionListener, KeyListener {
 
     private ArrayList<Gear> gearList;
     private ArrayList<Gear> dontRotList;
+    private ArrayList<Point> tilesTaken;
     private Player player;
+    private Gear mainGear;
+
+    private double initialSpeed = DEFAULT_SPEED;
 
     public Board() {
         // set the game board size
@@ -38,16 +45,16 @@ public class Board extends JPanel implements ActionListener, KeyListener {
         setBackground(new Color(232, 232, 232));
 
         // initialize the game state
+        tilesTaken = new ArrayList<Point>();
         gearList = new ArrayList<Gear>();
-        Gear mainGearSpinning = new Gear(new Point(4, 5));
-        mainGearSpinning.setSpeed(DEFAULT_SPEED);
-        mainGearSpinning.setDirection(CLOCKWISE);
-        gearList.add(mainGearSpinning);
 
+        gearList.add(new Gear(new Point(4, 5), SMALL));
+        mainGear = new Gear(new Point(4, 5), SMALL);
         dontRotList = new ArrayList<Gear>();
-        // dontRotList.add(new Gear(new Point(4, 5)));
+        updateGears(new Point(4, 5));
 
         player = new Player();
+
         // this timer will call the actionPerformed() method every DELAY ms
         timer = new Timer(DELAY, this);
         timer.start();
@@ -112,14 +119,47 @@ public class Board extends JPanel implements ActionListener, KeyListener {
 
         if (key == KeyEvent.VK_E) {
             addGear();
+            updateGears(mainGear.getPos());
         }
         if (key == KeyEvent.VK_Q) {
             removeGear();
         }
         if (key == KeyEvent.VK_R) {
             System.out.println("updating speeds");
-            updateGearRotationSpeed(player.getPos());
+
+            updateGears(player.getPos());
             System.out.println("done");
+        }
+        if (key == KeyEvent.VK_1) {
+            initialSpeed = 1;
+            updateGears(player.getPos());
+        } else if (key == KeyEvent.VK_1) {
+            initialSpeed = 3;
+            updateGears(player.getPos());
+        } else if (key == KeyEvent.VK_2) {
+            initialSpeed = 4;
+            updateGears(player.getPos());
+        } else if (key == KeyEvent.VK_3) {
+            initialSpeed = 5;
+            updateGears(player.getPos());
+        } else if (key == KeyEvent.VK_4) {
+            initialSpeed = 6;
+            updateGears(player.getPos());
+        } else if (key == KeyEvent.VK_5) {
+            initialSpeed = 8;
+            updateGears(player.getPos());
+        } else if (key == KeyEvent.VK_6) {
+            initialSpeed = 10;
+            updateGears(player.getPos());
+        } else if (key == KeyEvent.VK_7) {
+            initialSpeed = 12;
+            updateGears(player.getPos());
+        } else if (key == KeyEvent.VK_8) {
+            initialSpeed = 14;
+            updateGears(player.getPos());
+        } else if (key == KeyEvent.VK_9) {
+            initialSpeed = 20;
+            updateGears(player.getPos());
         }
     }
 
@@ -205,17 +245,35 @@ public class Board extends JPanel implements ActionListener, KeyListener {
 
             }
         }
-        gearList.add(new Gear(new Point(player.getPos())));
+        // if ((player.getX() == 0 || player.getY() == 0)) {
+        // }
+        gearList.add(new Gear(new Point(player.getPos()), SMALL));
+    }
+
+    private void updateGears(Point thePos) {
+        // initialise only runs once
+        mainGear = getGear(thePos);
+        dontRotList.clear();
+        getGear(thePos).setDirection(CLOCKWISE);
+        getGear(thePos).setSpeed(initialSpeed);
+
+        // makes a chain reaction of gears
+        updateGearRotationSpeed(thePos);
     }
 
     private void updateGearRotationSpeed(Point mainGearPos) {
-        // TODO fix stackOverflow error
-        for (Gear gear : gearList) {
-            Gear mainGear = getGear(mainGearPos);
-            if (gear.getPos().equals(mainGearPos) == true) {
-                dontRotList.add(gear);
-            }
 
+        // TODO fix stackOverflow error
+        System.out.println(mainGearPos);
+        Gear mainGear = new Gear(new Point(50, 50));
+        for (Gear mgear : gearList) { // adds this gear to the dont spin list
+            mainGear = getGear(mainGearPos);
+            if (mgear.getPos().equals(mainGearPos) == true) {
+                dontRotList.add(mgear);
+            }
+        }
+
+        for (Gear gear : gearList) {
             if ((gear.getPos().distance(mainGearPos) == 1) && gearRemoved(gear.getPos()) == false) {
 
                 gear.setSpeed(gearSpeedFormula(mainGear, gear));
@@ -223,12 +281,13 @@ public class Board extends JPanel implements ActionListener, KeyListener {
                     gear.setDirection(COUNTERCLOCKWISE);
                 } else if (mainGear.getDirection() == COUNTERCLOCKWISE) {
                     gear.setDirection(CLOCKWISE);
+                } else {
+                    gear.setDirection(CLOCKWISE);
+                    System.out.println("gear at " + gear.getPos() + " error, no direction found.");
                 }
                 updateGearRotationSpeed(gear.getPos());
             }
-
         }
-        dontRotList.clear();
     }
 
     /**
@@ -239,7 +298,35 @@ public class Board extends JPanel implements ActionListener, KeyListener {
      * @return the speed the second gear should spin
      */
     private double gearSpeedFormula(Gear gearOne, Gear gearTwo) {
-        return DEFAULT_SPEED;
+        return (gearOne.getSize() / gearTwo.getSize()) * gearOne.getSpeed();
+        // return DEFAULT_SPEED;
+    }
+
+    private void updateTiles() {
+        for (Gear gear : gearList) {
+            if (!tilesTaken.contains(gear.getPos())) { // if a gear isnt in the list, add it
+                switch (gear.getSize()) {
+                    case SMALL:
+                        tilesTaken.add(gear.getPos());
+                        break;
+                    case MEDIUM:
+                        for (var dx = -1; dx <= 1; dx++) {
+                            for (var dy = -1; dy <= 1; dy++) {
+                                tilesTaken.add(new Point(gear.getX() + dx, gear.getY() + dy));
+                            }
+                        }
+                        break;
+                    case LARGE:
+                        // TODO add large size
+
+                        break;
+
+                    default:
+                        System.out.println("error 404: size not found");
+                }
+            }
+        }
+
     }
 
     private Gear getGear(Point posit) {
@@ -262,4 +349,5 @@ public class Board extends JPanel implements ActionListener, KeyListener {
 
         return false;
     }
+
 }

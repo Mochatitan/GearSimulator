@@ -18,21 +18,35 @@ public class Gear {
     private BufferedImage finalImage;
     // current position of the gear on the board grid
     private Point pos;
+    // variables of spinning
     private double drawingAngle = 0;
     private double speed = 0;
     private Boolean clockWise = true;
-
-    public Gear(Point gpos) {     //Point constructor
+    //other variables of gear
+    private int size;
+    private int teeth;
+    
+    /**
+    *<p>
+    *a new Gear object- made for gear simulator by Mochatitan.
+    *@param gpos Point of where the gear is.
+    *@param gsize what size the gear is- size1 is small, size2 is medium, size3 is large.
+    *
+    */
+    public Gear(Point gpos, int gsize) {     //Point constructor
         // load the assets
         loadImage();
         // initialize the state
         pos = gpos;
+        size = gsize:
     }
     public Gear(int x, int y) {   //X and Y constructor
         //load the assets
         loadImage();
         // initialize the state
         pos = new Point(x,y);
+        size = 1;
+        teeth = 16;
     }     
 
     private void loadImage() {

@@ -57,12 +57,12 @@ public class Gear {
      * 
      * @param gpos Point of where the gear is.
      */
-    public Gear(Point gpos) { // Default Point constructor(default size)
+    public Gear(Point gpos, int gsize, int gspeed) { // Default Point constructor(default size)
 
         // initialize the state
         pos = gpos;
         size = 1;
-
+        speed = gspeed;
         // load the assets
         loadImage();
     }
@@ -131,8 +131,8 @@ public class Gear {
             this.drawingAngle -= speed;
         }
 
-        if (this.drawingAngle == 360) { // may cause bugs, if theres a bug comment this out
-            this.drawingAngle = 0;
+        if (this.drawingAngle >= 360) { // may cause bugs, if theres a bug comment this out
+            this.drawingAngle = this.drawingAngle - 360;
         }
     }
 

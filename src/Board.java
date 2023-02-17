@@ -119,7 +119,7 @@ public class Board extends JPanel implements ActionListener, KeyListener {
 
         if (key == KeyEvent.VK_E) {
             addGear();
-            updateGears(mainGear.getPos());
+
         }
         if (key == KeyEvent.VK_Q) {
             removeGear();
@@ -130,36 +130,37 @@ public class Board extends JPanel implements ActionListener, KeyListener {
             updateGears(player.getPos());
             System.out.println("done");
         }
+        // speeds
         if (key == KeyEvent.VK_1) {
             initialSpeed = 1;
-            updateGears(player.getPos());
+            updateGears(mainGear.getPos());
         } else if (key == KeyEvent.VK_1) {
             initialSpeed = 3;
-            updateGears(player.getPos());
+            updateGears(mainGear.getPos());
         } else if (key == KeyEvent.VK_2) {
             initialSpeed = 4;
-            updateGears(player.getPos());
+            updateGears(mainGear.getPos());
         } else if (key == KeyEvent.VK_3) {
             initialSpeed = 5;
-            updateGears(player.getPos());
+            updateGears(mainGear.getPos());
         } else if (key == KeyEvent.VK_4) {
             initialSpeed = 6;
-            updateGears(player.getPos());
+            updateGears(mainGear.getPos());
         } else if (key == KeyEvent.VK_5) {
             initialSpeed = 8;
-            updateGears(player.getPos());
+            updateGears(mainGear.getPos());
         } else if (key == KeyEvent.VK_6) {
             initialSpeed = 10;
-            updateGears(player.getPos());
+            updateGears(mainGear.getPos());
         } else if (key == KeyEvent.VK_7) {
             initialSpeed = 12;
-            updateGears(player.getPos());
+            updateGears(mainGear.getPos());
         } else if (key == KeyEvent.VK_8) {
             initialSpeed = 14;
-            updateGears(player.getPos());
+            updateGears(mainGear.getPos());
         } else if (key == KeyEvent.VK_9) {
             initialSpeed = 20;
-            updateGears(player.getPos());
+            updateGears(mainGear.getPos());
         }
     }
 
@@ -234,10 +235,10 @@ public class Board extends JPanel implements ActionListener, KeyListener {
     }
 
     private void addGear() {
-
+        Point thePos = new Point(player.getPos());
         for (Gear gear : gearList) {
             // if player is on same tile as an gear, destroy the gear
-            if (player.getPos().equals(gear.getPos()) == true) {
+            if (thePos.equals(gear.getPos()) == true) {
                 // add gear to kill list
 
                 System.out.println("gear already here");
@@ -245,9 +246,24 @@ public class Board extends JPanel implements ActionListener, KeyListener {
 
             }
         }
-        // if ((player.getX() == 0 || player.getY() == 0)) {
-        // }
-        gearList.add(new Gear(new Point(player.getPos()), SMALL));
+
+        gearList.add(new Gear(thePos, SMALL));
+
+        for (Gear gear : gearList) {
+            if (thePos.distance(gear.getPos()) == 1 &&
+                    gear.getSpeed() != 0) {
+                getGear(thePos).setSpeed(gearSpeedFormula(gear,
+                        getGear(thePos)));
+                getGear(thePos).setDirection(!gear.getDirection());
+                updateGearRotationSpeed(mainGear.getPos());
+            }
+        }
+        // mainGear = getGear(thePos);
+        // dontRotList.clear();
+        // getGear(thePos).setDirection(CLOCKWISE);
+        // getGear(thePos).setSpeed(initialSpeed);
+
+        // updateGearRotationSpeed(mainGear.getPos());
     }
 
     private void updateGears(Point thePos) {
@@ -263,9 +279,8 @@ public class Board extends JPanel implements ActionListener, KeyListener {
 
     private void updateGearRotationSpeed(Point mainGearPos) {
 
-        // TODO fix stackOverflow error
         System.out.println(mainGearPos);
-        Gear mainGear = new Gear(new Point(50, 50));
+        Gear mainGear = new Gear(new Point(50, 50), SMALL);
         for (Gear mgear : gearList) { // adds this gear to the dont spin list
             mainGear = getGear(mainGearPos);
             if (mgear.getPos().equals(mainGearPos) == true) {

@@ -104,4 +104,12 @@ public class Player {
         return pos;
     }
 
+    public int getX() {
+        return pos.x;
+    }
+
+    public int getY() {
+        return pos.y;
+    }
+
 }

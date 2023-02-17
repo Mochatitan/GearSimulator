@@ -15,11 +15,12 @@ class App {
         window.add(board);
         // pass keyboard inputs to the jpanel
         window.addKeyListener(board);
-        
+        window.addMouseListener(board);
         // don't allow the user to resize the window
         window.setResizable(false);
         // fit the window size around the components (just our jpanel).
-        // pack() should be called after setResizable() to avoid issues on some platforms
+        // pack() should be called after setResizable() to avoid issues on some
+        // platforms
         window.pack();
         // open window in the center of the screen
         window.setLocationRelativeTo(null);

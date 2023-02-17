@@ -3,8 +3,9 @@ import java.awt.event.*;
 import java.util.ArrayList;
 // import java.util.Random;
 import javax.swing.*;
+import javax.swing.event.MouseInputListener;
 
-public class Board extends JPanel implements ActionListener, KeyListener {
+public class Board extends JPanel implements ActionListener, KeyListener, MouseInputListener {
 
     // controls the delay between each tick in ms
     private final int DELAY = 25;
@@ -17,11 +18,11 @@ public class Board extends JPanel implements ActionListener, KeyListener {
     public static final Boolean CLOCKWISE = true;
     public static final Boolean COUNTERCLOCKWISE = false;
     // Gear sizes
-    public static final int SMALL = 1;
-    public static final int MEDIUM = 3;
-    public static final int LARGE = 129;
-    // controls how many apples appear on the board
-    // public static final int NUM_GEARS = 5;
+    public static final int SMALL = 25;
+    public static final int MEDIUM = 75;
+    public static final int LARGE = 125;
+    // New Gear
+    public static final Point NEWGEAR = new Point(500, 500);
     // suppress serialization warning
     private static final long serialVersionUID = 490905409104883233L;
 
@@ -32,9 +33,10 @@ public class Board extends JPanel implements ActionListener, KeyListener {
 
     private ArrayList<Gear> gearList;
     private ArrayList<Gear> dontRotList;
-    private ArrayList<Point> tilesTaken;
+    // private ArrayList<Point> tilesTaken;
     private Player player;
     private Gear mainGear;
+    private Gear testingGear;
 
     private double initialSpeed = DEFAULT_SPEED;
 
@@ -45,16 +47,15 @@ public class Board extends JPanel implements ActionListener, KeyListener {
         setBackground(new Color(232, 232, 232));
 
         // initialize the game state
-        tilesTaken = new ArrayList<Point>();
+        // tilesTaken = new ArrayList<Point>();
         gearList = new ArrayList<Gear>();
 
-        gearList.add(new Gear(new Point(4, 5), SMALL));
-        mainGear = new Gear(new Point(4, 5), SMALL);
+        gearList.add(new Gear(new Point(200, 250), SMALL));
+        mainGear = new Gear(new Point(200, 250), SMALL);
         dontRotList = new ArrayList<Gear>();
-        updateGears(new Point(4, 5));
-
+        updateGears(new Point(200, 250));
         player = new Player();
-
+        testingGear = new Gear(new Point(500, 500), SMALL);
         // this timer will call the actionPerformed() method every DELAY ms
         timer = new Timer(DELAY, this);
         timer.start();
@@ -74,6 +75,7 @@ public class Board extends JPanel implements ActionListener, KeyListener {
         for (Gear gear : gearList) {
             gear.tick();
         }
+        testingGear.tick();
         // calling repaint() will trigger paintComponent() to run again,
         // which will refresh/redraw the graphics.
         repaint();
@@ -94,6 +96,7 @@ public class Board extends JPanel implements ActionListener, KeyListener {
         for (Gear gear : gearList) {
             gear.draw(g2d, this);
         }
+        testingGear.draw(g2d, this);
 
         player.draw(g, this);
 
@@ -118,7 +121,7 @@ public class Board extends JPanel implements ActionListener, KeyListener {
         // one whole tile for this input
 
         if (key == KeyEvent.VK_E) {
-            addGear();
+            addGear(new Point(player.getPos()));
 
         }
         if (key == KeyEvent.VK_Q) {
@@ -167,6 +170,43 @@ public class Board extends JPanel implements ActionListener, KeyListener {
     @Override
     public void keyReleased(KeyEvent e) {
         // react to key up events
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+        System.out.println("Mouse Clicked");
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+        testingGear.mousePressed(e);
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+        testingGear.mouseReleased(e);
+
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+        System.out.println("Mouse Entered");
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+        System.out.println("Mouse Exited");
+    }
+
+    @Override
+    public void mouseDragged(MouseEvent e) {
+        System.out.println("Mouse dragged");
+        testingGear.mouseDragged(e);
+    }
+
+    @Override
+    public void mouseMoved(MouseEvent e) {
+        System.out.println("Mouse Moved");
     }
 
     private void drawBackground(Graphics g) {
@@ -219,6 +259,14 @@ public class Board extends JPanel implements ActionListener, KeyListener {
         g2d.drawString(text, x, y);
     }
 
+    private void dragNewGear() {
+
+    }
+
+    private void stopDragging() {
+
+    }
+
     private void removeGear() {
         if (getGear(player.getPos()) != null) {
             dontRotList.remove(getGear(player.getPos()));
@@ -234,8 +282,8 @@ public class Board extends JPanel implements ActionListener, KeyListener {
 
     }
 
-    private void addGear() {
-        Point thePos = new Point(player.getPos());
+    private void addGear(Point thePos) {
+        // Point thePos = new Point(player.getPos());
         for (Gear gear : gearList) {
             // if player is on same tile as an gear, destroy the gear
             if (thePos.equals(gear.getPos()) == true) {
@@ -289,7 +337,7 @@ public class Board extends JPanel implements ActionListener, KeyListener {
         }
 
         for (Gear gear : gearList) {
-            if ((gear.getPos().distance(mainGearPos) == 1) && gearRemoved(gear.getPos()) == false) {
+            if ((gear.getPos().distance(mainGearPos) == 50) && gearRemoved(gear.getPos()) == false) {
 
                 gear.setSpeed(gearSpeedFormula(mainGear, gear));
                 if (mainGear.getDirection() == CLOCKWISE) {
@@ -313,36 +361,37 @@ public class Board extends JPanel implements ActionListener, KeyListener {
      * @return the speed the second gear should spin
      */
     private double gearSpeedFormula(Gear gearOne, Gear gearTwo) {
-        return (gearOne.getSize() / gearTwo.getSize()) * gearOne.getSpeed();
+        return (gearOne.getRadius() / gearTwo.getRadius()) * gearOne.getSpeed();
         // return DEFAULT_SPEED;
     }
 
-    private void updateTiles() {
-        for (Gear gear : gearList) {
-            if (!tilesTaken.contains(gear.getPos())) { // if a gear isnt in the list, add it
-                switch (gear.getSize()) {
-                    case SMALL:
-                        tilesTaken.add(gear.getPos());
-                        break;
-                    case MEDIUM:
-                        for (var dx = -1; dx <= 1; dx++) {
-                            for (var dy = -1; dy <= 1; dy++) {
-                                tilesTaken.add(new Point(gear.getX() + dx, gear.getY() + dy));
-                            }
-                        }
-                        break;
-                    case LARGE:
-                        // TODO add large size
+    // private void updateTiles() {
+    // for (Gear gear : gearList) {
+    // if (!tilesTaken.contains(gear.getPos())) { // if a gear isnt in the list, add
+    // it
+    // switch (gear.getRadius()) {
+    // case SMALL:
+    // tilesTaken.add(gear.getPos());
+    // break;
+    // case MEDIUM:
+    // for (var dx = -50; dx <= 50; dx += 50) {
+    // for (var dy = -50; dy <= 50; dy += 50) {
+    // tilesTaken.add(new Point(gear.getX() + dx, gear.getY() + dy));
+    // }
+    // }
+    // break;
+    // case LARGE:
+    // // TODO add large size
 
-                        break;
+    // break;
 
-                    default:
-                        System.out.println("error 404: size not found");
-                }
-            }
-        }
+    // default:
+    // System.out.println("error 404: size not found");
+    // }
+    // }
+    // }
 
-    }
+    // }
 
     private Gear getGear(Point posit) {
 

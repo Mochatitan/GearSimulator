@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.*;
+
 import java.awt.*;
 
 public class Player {
@@ -18,6 +19,7 @@ public class Player {
     private Point pos;
     // keep track of the player's score
     private int score;
+    private int speed = 5;
 
     public Player() {
         // load the assets
@@ -33,7 +35,7 @@ public class Player {
             // you can use just the filename if the image file is in your
             // project folder, otherwise you need to provide the file path.
             image = ImageIO.read(new File("src/images/scratch_cat.png"));
-            newImage = image.getScaledInstance(Board.TILE_SIZE, Board.TILE_SIZE, Image.SCALE_DEFAULT);
+            newImage = image.getScaledInstance(50, 50, Image.SCALE_DEFAULT);
 
         } catch (IOException exc) {
             System.out.println("Error opening image file: " + exc.getMessage());
@@ -47,8 +49,8 @@ public class Player {
         // position by multiplying by the tile size.
         g.drawImage(
                 newImage,
-                pos.x * Board.TILE_SIZE,
-                pos.y * Board.TILE_SIZE,
+                pos.x,
+                pos.y,
                 observer);
     }
 
@@ -60,16 +62,16 @@ public class Player {
         // depending on which arrow key was pressed, we're going to move the player by
         // one whole tile for this input
         if (key == KeyEvent.VK_UP || key == KeyEvent.VK_W) {
-            pos.translate(0, -1);
+            pos.translate(0, -speed);
         }
         if (key == KeyEvent.VK_RIGHT || key == KeyEvent.VK_D) {
-            pos.translate(1, 0);
+            pos.translate(speed, 0);
         }
         if (key == KeyEvent.VK_DOWN || key == KeyEvent.VK_S) {
-            pos.translate(0, 1);
+            pos.translate(0, speed);
         }
         if (key == KeyEvent.VK_LEFT || key == KeyEvent.VK_A) {
-            pos.translate(-1, 0);
+            pos.translate(-speed, 0);
         }
 
     }
@@ -81,14 +83,14 @@ public class Player {
         // prevent the player from moving off the edge of the board sideways
         if (pos.x < 0) {
             pos.x = 0;
-        } else if (pos.x >= Board.COLUMNS) {
-            pos.x = Board.COLUMNS - 1;
+        } else if (pos.x >= Board.COLUMNS * Board.TILE_SIZE) {
+            pos.x = Board.COLUMNS * Board.TILE_SIZE - 1;
         }
         // prevent the player from moving off the edge of the board vertically
         if (pos.y < 0) {
             pos.y = 0;
-        } else if (pos.y >= Board.ROWS) {
-            pos.y = Board.ROWS - 1;
+        } else if (pos.y >= Board.ROWS * Board.TILE_SIZE) {
+            pos.y = Board.ROWS * Board.TILE_SIZE - 1;
         }
     }
 
